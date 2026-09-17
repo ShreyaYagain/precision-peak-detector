@@ -1,0 +1,107 @@
+COMPONENT LIST - PRECISION PEAK DETECTOR CIRCUIT
+==================================================
+
+INTEGRATED CIRCUITS:
+====================
+IC1 (U1): LM358 Operational Amplifier (Dual Op-Amp Package)
+          - Used as voltage follower / buffer stage
+          - Pin configuration: DIP-8
+          - Supply voltage: +5V (single supply)
+
+IC2 (U2): LM358 Operational Amplifier (Second op-amp in IC1 or separate IC)
+          - Used as precision rectifier / peak detector
+          - Pin configuration: DIP-8
+          - Supply voltage: +5V (single supply)
+
+DISCRETE SEMICONDUCTORS:
+========================
+D1:       1N4148 Fast Switching Diode
+          - Used in precision rectifier feedback loop
+          - Forward voltage drop: ~0.7V
+          - Maximum forward current: 200 mA
+          - Package: DO-35 (through-hole)
+
+RESISTORS:
+==========
+R1:       100 kΩ Resistor, 1/4W, 5% tolerance
+          - Connected from signal input to U1 non-inverting input
+          - Part of input biasing network
+          - Standard carbon film resistor
+
+R2:       100 kΩ Resistor, 1/4W, 5% tolerance
+          - Connected from U1 non-inverting input to GND
+          - Part of input biasing network for DC bias
+          - Standard carbon film resistor
+
+R3:       1 MΩ Resistor, 1/4W, 5% tolerance
+          - Connected from V_PEAK node to GND
+          - Provides slow discharge path for capacitor
+          - Calculated from time constant: R = τ / C = 10s / 10µF
+
+CAPACITORS:
+===========
+C1:       10 µF Capacitor, 16V rating (minimum)
+          - Used in peak-hold stage
+          - Stores the detected peak voltage
+          - Type: Electrolytic or ceramic (with 16V+ rating)
+          - Polarity: Positive terminal to V_PEAK, Negative to GND
+          - Note: Electrolytic capacitor is preferred for larger capacitance
+
+POWER SUPPLY & CONNECTIONS:
+===========================
+Power Supply:     +5V DC regulated supply
+                  - Current requirement: ~50-100 mA typical
+                  - Connected to Pin 8 of both U1 and U2
+
+Ground:           Common ground reference
+                  - Connected to Pin 4 of both U1 and U2
+                  - All GND connections must be at same reference
+
+BREADBOARD & WIRING:
+====================
+Breadboard:       Standard solderless breadboard
+                  - Minimum size: 830 tie points (full size)
+                  - Power rails recommended
+
+Jumper Wires:     22 AWG solid copper wire
+                  - Various lengths for flexibility
+                  - Colors recommended: Red (+5V), Black (GND), Others (signal)
+
+MEASUREMENT EQUIPMENT:
+======================
+Function Generator:   For generating test signals
+                      - Frequency range: 0.05 - 10 Hz minimum
+                      - Amplitude capability: 0 - 5V
+                      - Waveform: Sine wave
+                      - Example: MSG2M or similar
+
+Oscilloscope:        For signal observation
+                      - Minimum 2 channels required (CH1 and CH2)
+                      - Bandwidth: 1 MHz minimum
+                      - DC coupling capability required
+                      - Example: CRO SM203G
+
+Multimeter:           For voltage and component testing
+                      - DC voltage measurement capability
+                      - Resistance measurement capability
+                      - Continuity testing
+
+OPTIONAL COMPONENTS (For Future Enhancement):
+==============================================
+- Decoupling capacitors: 0.1 µF (100nF) across power pins for noise reduction
+- Pull-up resistors: If modifying for specific applications
+- Protection diodes: If adding battery-powered operation
+
+TOTAL COMPONENT COUNT:
+======================
+- Integrated Circuits: 2
+- Discrete Semiconductors: 1
+- Resistors: 3
+- Capacitors: 1
+- Total Active/Passive: 7 components
+
+
+NOTE:
+=====
+The LM358 IC contains TWO independent operational amplifiers in one package.
+Both op-amps (A and B) share power pins but have independent input/output pins.

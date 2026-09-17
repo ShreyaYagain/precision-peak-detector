@@ -1,0 +1,250 @@
+CIRCUIT SCHEMATIC - PRECISION PEAK DETECTOR
+=============================================
+
+COMPLETE CIRCUIT DIAGRAM (ASCII):
+==================================
+
+                    +5V                      +5V
+                     |                        |
+                     |                        |
+        ┌────────────┴────────────┐  ┌────────┴────────────┐
+        │                         │  │                     │
+        │  U1 (LM358)            │  │  U2 (LM358)        │
+        │  (OP-AMP A)            │  │  (OP-AMP B)        │
+        │                         │  │                     │
+     ┌──┴──┐                  ┌──┴──┐                  ┌──┴──┐
+     │ Pin8│──────┬───────────│ Pin8│──────┬───────────│ Pin8│
+     │(+5V)│      │           │(+5V)│      │           │     │
+     └─────┘      │           └─────┘      │           └─────┘
+                  │                        │
+              ┌───┴───────────────────┬────┴────────────┐
+              │                       │                 │
+           ┌──┴──┐                ┌───┴───┐        ┌────┴─┐
+           │Pin4 │                │Pin4   │        │      │
+           │(GND)│                │(GND)  │        │ GND  │
+           └─────┘                └───────┘        └──────┘
+              │                       │
+              └───────┬───────────────┴─────────────┐
+                      │                             │
+                     GND (Common Ground)           GND
+
+SIGNAL INPUT STAGE (Stage 1 - Voltage Follower):
+==================================================
+
+Signal Source                  R1=100k
+[SINE(0.5 0.05 1)]────────────────┬────────────┐
+     V1                            │            │
+   (Signal)                        │            │
+                              ┌────┴────┐      │
+                              │ U1(+)   │      │
+                              │ Pin 3   │      │
+                              │         │  ┌───┴────┐
+                              │  LM358  │  │        │
+                              │         │  │        │
+                      ┌───────┤ U1 Amp  ├──┤        │
+                      │       │         │  │ R2     │
+                      │       │ U1(-)   │  │ 100k   │
+                      │       │ Pin 2   │  │        │
+                      │       └────┬────┘  │        │
+                      │            │       │        │
+                      │       ┌─────┴───────┴────┐   │
+                      │       │     Pin 1        │   │
+                      │       │   (Output A)     │   │
+                      │       └─────┬───────────┬┘   │
+                      │             │           │   │
+                      │   (Feedback)│           │   │
+                      │   U1(-)←────┘           │   │
+                      │                         │   │
+                      └─────────────────────────┴───┴────→ to U2(Pin 5)
+                                                    │
+                                                   GND
+
+
+PRECISION RECTIFIER STAGE (Stage 2 - Peak Detector):
+======================================================
+
+From U1 Output ──────────→ U2(+) (Pin 5)
+                              │
+                          ┌───┴────┐
+                          │ U2     │
+                          │ LM358  │
+                    ┌─────┤        │
+                    │     │ U2     ├────────┐
+                    │     │ Amp    │        │
+                    │     │        │        │
+                    │     │ U2(-)  │      ┌─┴──┐
+                    │     │ Pin 6  │      │ D1 │
+                    │     └────┬───┘      │(1N4│
+                    │          │         │4148)│
+                    │          │         └────┘
+                    │          │         │ Anode
+                    │          │         │ (long leg)
+                    │          │         │
+            ┌───────┴──────────┴──────────┴─┐
+            │                              │
+            │                          V_PEAK
+            │                          (Output)
+            │
+        U2(-)←─ Feedback from diode cathode
+        Pin 6
+
+
+PEAK-HOLD STORAGE STAGE (Stage 3 - RC Network):
+=================================================
+
+From D1 Cathode ──┐
+                  │
+                  ├─────┬──────┐
+                  │     │      │
+                 ┌┴─────┴─┐   ┌┴────┐
+                 │   C1   │   │ R3  │
+                 │  10µF  │   │  1M │
+                 │        │   │     │
+                 └───┬────┘   └─────┘
+                     │           │
+                    GND         GND
+
+
+COMPLETE CONNECTIONS SUMMARY:
+===============================
+
+POWER CONNECTIONS:
+─────────────────
+U1 Pin 8  ──→  +5V
+U2 Pin 8  ──→  +5V
+U1 Pin 4  ──→  GND (Common)
+U2 Pin 4  ──→  GND (Common)
+
+STAGE 1 - VOLTAGE FOLLOWER (U1):
+─────────────────────────────────
+U1 Pin 3 (Non-Inv)  ←── R1 (100k) ←── Signal Input
+R1 junction         ←── R2 (100k) ←── GND
+U1 Pin 1 (Output)   ←→ U1 Pin 2 (Inv)  [Feedback for unity gain]
+U1 Pin 1 (Output)   ──→ U2 Pin 5 (Non-Inv) [Signal path to Stage 2]
+
+STAGE 2 - PRECISION RECTIFIER (U2):
+────────────────────────────────────
+U2 Pin 5 (Non-Inv)  ←── U1 Pin 1 Output
+U2 Pin 7 (Output)   ──→ D1 Anode (long leg)
+D1 Cathode (short)  ←→ U2 Pin 6 (Inv) + V_PEAK junction
+
+STAGE 3 - PEAK-HOLD (RC Network):
+──────────────────────────────────
+V_PEAK junction     ←── D1 Cathode
+V_PEAK junction     ─→ C1 (+) positive terminal
+V_PEAK junction     ─→ R3 one end
+C1 (-) negative     ──→ GND
+R3 other end        ──→ GND
+
+MEASUREMENT POINTS:
+───────────────────
+Oscilloscope Channel 1 (Input):   Signal after R1 or U1 output
+Oscilloscope Channel 2 (Output):  V_PEAK node (peak-hold output)
+
+
+PIN ASSIGNMENTS - LM358 DIP-8 IC:
+=================================
+
+         ┌─────────────────────┐
+         │    U1/U2 (LM358)    │
+         │ (Dual Op-Amp)       │
+    Pin1 ├─ Output A   +5V ─┤Pin8
+         │ (or Output B)      │
+    Pin2 ├─ Inverting  GND ─┤Pin4
+         │ Input A            │
+    Pin3 ├─ Non-Inverting    │
+         │ Input A    Non-    ├─Pin5
+         │           Inverting│
+    Pin6 ├─ Inverting  Input B│
+         │ Input B            │
+    Pin7 ├─ Output B          │
+         │                     │
+         └─────────────────────┘
+
+For this circuit:
+  U1 uses: Pins 1, 2, 3, 4, 8 (Op-Amp A)
+  U2 uses: Pins 5, 6, 7, 4, 8 (Op-Amp B)
+  Pins 4, 8 are shared power pins
+
+
+COMPONENT PLACEMENT ON BREADBOARD:
+===================================
+
+                    +5V Rail
+                     ▲
+                     │
+    ┌────────────────┼────────────────┐
+    │                │                │
+    │         U1┌────┴─┐ U2┌────┴─┐  │
+    │      ┌───┤  LM358├───┤ LM358├──┴──→ D1 Anode
+    │      │    └──┬──┘    └──┬──┘      
+    │     R1      │ Pin3      │ Pin5     D1 Cathode
+    │    100k     │           │         ↓
+    │      │      └─R2,100k───┘        ┌─────────┐
+    │      ├───→ U1 Pin3              │ V_PEAK  │
+    │      │                           │ Junction│
+  Input    GND                         │    │    │
+    │                                  │    C1   R3
+    │                             ┌────┘    │    │
+    │                             │         │    │
+    └─────────────────────────────┴─────────┴────┘
+                                       ▼
+                                      GND Rail
+
+
+SIGNAL FLOW DIAGRAM:
+====================
+
+Input Signal (0.45-0.55V)
+    ↓
+[R1=100k Resistor]
+    ↓
+[Voltage Divider with R2]
+    ↓
+[U1 - Voltage Follower Buffer]  ← Buffers weak input, prevents loading
+    ↓
+[Buffered Signal - 0.45-0.55V]
+    ↓
+[U2 - Precision Rectifier]  ← Compares with stored peak
+    ↓ (if new peak is higher)
+[D1 Diode Conducts]  ← Forward biased
+    ↓
+[Charges C1 to new peak value]  ← Fast charging (milliseconds)
+    ↓
+[Stores peak in C1]
+    ↓ (if signal drops)
+[D1 Blocks]  ← Reverse biased, acts as open switch
+    ↓
+[C1 Holds voltage]
+    ↓ (slowly discharges)
+[R3 Discharge Path]  ← Slow discharge (seconds)
+    ↓
+[V_PEAK Output]  ← Peak voltage held for measurement
+
+
+TEST POINTS FOR MULTIMETER:
+===========================
+
+Point 1: Between R1 and R2 junction
+         Expected: ~2.5V DC (bias voltage)
+
+Point 2: U1 Output (Pin 1)
+         Expected: Signal voltage ~0.45-0.55V
+
+Point 3: V_PEAK junction (before R3/C1)
+         Expected: Peak value ~0.5V (slowly decaying)
+
+Point 4: Across capacitor C1
+         Expected: Peak voltage with slow decay
+
+All measurements should be taken with oscilloscope on DC mode
+or multimeter set to DC voltage.
+
+
+NOTES:
+======
+- All connections must be secure and free of cross-contamination
+- Use color-coded wires: Red for +5V, Black for GND, Others for signals
+- Measure all voltages relative to common ground
+- Signal generator ground must be connected to circuit ground
+- Oscilloscope grounds must all connect to circuit ground
